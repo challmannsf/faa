@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#3B3E41</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <description>Fraud and Approval manager</description>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <label>Fraud And Approval Manager</label>
+    <navType>Standard</navType>
+    <tabs>Fraud_And_Approval_Manager_App_Page</tabs>
+    <tabs>FAACheckLog__c</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>Fraud_And_Approval_Manager_UtilityBar</utilityBar>
+</CustomApplication>

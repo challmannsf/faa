@@ -2,7 +2,7 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
     Map <String, String> fraudProviderStatusMap = new Map<String, String>();
     List <String> orderSummaryList = new List<String>();
     for (FAAProcessStop__e processStopEvent : Trigger.New) {
-        orderAndStatusMap.put(processStopEvent.fraudProvider__c, processStopEvent.fraudStatus__c);
+        fraudProviderStatusMap.put(processStopEvent.fraudProvider__c, processStopEvent.fraudStatus__c);
         orderSummaryList.add(processStopEvent.orderSummaryId__c);
     }
 
@@ -14,6 +14,7 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
     List<FAACheckLog__c> faaCheckLogsToUpdate = new List<FAACheckLog__c>();
     for (FAACheckLog__c faaCheckLog : faaCheckLogs) {
         faaCheckLog.status__c = fraudProviderStatusMap.get(faaCheckLog.fraudProvider__c);
+        faaCheckLog.PendingSince__c = (faaCheckLog.status__c == FAATriggerHelper.STATUS_PENDING) ? datetime.now() : null;
         faaCheckLogsToUpdate.add(faaCheckLog);
     }
     update faaCheckLogsToUpdate;
@@ -26,6 +27,8 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
     Map<Id, String> orderSummariesToCancelMap = new Map<Id, String>();   
     Map<Id, String> orderSummariesToManuallyReviewMap = new Map<Id, String>();
     Map<Id, String> orderSummariesToApproveMap = new Map<Id, String>();
+
+    // TODO - pending fraud checks !!!! issue a pending event following the documentation
     
     for (FAACheckLog__c faaCheckLogAfterUpdate : faaCheckLogsAfterUpdate) {
         if (faaCheckLogAfterUpdate.status__c == FAATriggerHelper.STATUS_REJECTED) {
