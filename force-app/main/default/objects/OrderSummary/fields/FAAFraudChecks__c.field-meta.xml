@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>FAAFraudChecks__c</fullName>
     <externalId>false</externalId>
-    <label>Fraud Checks</label>
+    <label>FAA Fraud Checks</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
     <type>MultiselectPicklist</type>
@@ -11,14 +11,19 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>FAACheck1</fullName>
+                <fullName>ExampleFraudProvider</fullName>
                 <default>false</default>
-                <label>FAACheck1</label>
+                <label>ExampleFraudProvider</label>
             </value>
             <value>
-                <fullName>FAACheck2</fullName>
+                <fullName>ExampleFraudProviderDecline</fullName>
                 <default>false</default>
-                <label>FAACheck2</label>
+                <label>ExampleFraudProviderDecline</label>
+            </value>
+            <value>
+                <fullName>ExampleFraudProviderManualReview</fullName>
+                <default>false</default>
+                <label>ExampleFraudProviderManualReview</label>
             </value>
         </valueSetDefinition>
     </valueSet>

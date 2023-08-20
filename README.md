@@ -3,6 +3,14 @@
 The Fraud and Approval Manager allows you to run Fraud and Approval checks for different providers in your Salesforce Order Management application. It orchestrates different providers and performs checks to get the Order Summary finally approved.
 Every Fraud Status can be reviewed and monitored across the application, getting insights about your order lifecycle.
 
+
+## Setup
+
+Assign TODO-Permission set to your user
+NOTE: OrderSummary.FAAFraudChecks__c might need updates in other permission sets which are in use
+
+Fraud provider is not allowed to contain ":" (FAAProcessStop is parsing on this)
+
 ## Technical Documentation
 
 ### Register a Fraud Provider

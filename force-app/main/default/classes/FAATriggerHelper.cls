@@ -27,7 +27,7 @@ public with sharing class FAATriggerHelper {
             }
         }
 
-        List<OrderSummary> orderSummaries = [SELECT ID, fraudChecks__c 
+        List<OrderSummary> orderSummaries = [SELECT ID, FAAFraudChecks__c 
                                             FROM OrderSummary 
                                             WHERE ID IN :orderSummaryIds];
         return orderSummaries;

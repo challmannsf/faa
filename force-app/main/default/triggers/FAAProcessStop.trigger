@@ -1,25 +1,27 @@
 trigger FAAProcessStop on FAAProcessStop__e (after insert) {
-    Map <Id, String> orderAndStatusMap = new Map<Id, String>();
+    Map <String, String> fraudProviderStatusMap = new Map<String, String>();
+    List <String> orderSummaryList = new List<String>();
     for (FAAProcessStop__e processStopEvent : Trigger.New) {
-        orderAndStatusMap.put(processStopEvent.orderSummaryId__c, processStopEvent.fraudStatus__c);
+        orderAndStatusMap.put(processStopEvent.fraudProvider__c, processStopEvent.fraudStatus__c);
+        orderSummaryList.add(processStopEvent.orderSummaryId__c);
     }
 
     List<FAACheckLog__c> faaCheckLogs = [SELECT status__c, orderSummaryId__c 
                                             FROM FAACheckLog__c
                                             WHERE orderSummaryId__c
-                                            IN :orderAndStatusMap.keySet()];
+                                            IN :orderSummaryList];
 
     List<FAACheckLog__c> faaCheckLogsToUpdate = new List<FAACheckLog__c>();
     for (FAACheckLog__c faaCheckLog : faaCheckLogs) {
-        faaCheckLog.status__c = orderAndStatusMap.get(faaCheckLog.orderSummaryId__c);
+        faaCheckLog.status__c = fraudProviderStatusMap.get(faaCheckLog.fraudProvider__c);
         faaCheckLogsToUpdate.add(faaCheckLog);
     }
-    insert faaCheckLogsToUpdate;
+    update faaCheckLogsToUpdate;
 
     List<FAACheckLog__c> faaCheckLogsAfterUpdate = [SELECT status__c, orderSummaryId__c 
                                             FROM FAACheckLog__c
                                             WHERE orderSummaryId__c
-                                            IN :orderAndStatusMap.keySet()];
+                                            IN :orderSummaryList];
 
     Map<Id, String> orderSummariesToCancelMap = new Map<Id, String>();   
     Map<Id, String> orderSummariesToManuallyReviewMap = new Map<Id, String>();
@@ -43,27 +45,23 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
     }
 
     List<FAAProcessResult__e> faaProcessResultList = new List<FAAProcessResult__e>();
-    String recommendedOrderSummaryStatus;
     FAAProcessResult__e faaProcessResult;
     
     // add cancel events 
     for (Id orderSummaryId : orderSummariesToCancelMap.keySet()) {
-        recommendedOrderSummaryStatus = orderSummariesToCancelMap.get(orderSummaryId);
-        faaProcessResult = new FAAProcessResult__e(orderSummaryId__c = orderSummaryId, result__c = recommendedOrderSummaryStatus);
+        faaProcessResult = new FAAProcessResult__e(orderSummaryId__c = orderSummaryId, result__c = 'Rejected');
         faaProcessResultList.add(faaProcessResult);
     }
 
     // add manual review events 
     for (Id orderSummaryId : orderSummariesToManuallyReviewMap.keySet()) {
-        recommendedOrderSummaryStatus = orderSummariesToCancelMap.get(orderSummaryId);
-        faaProcessResult = new FAAProcessResult__e(orderSummaryId__c = orderSummaryId, result__c = recommendedOrderSummaryStatus);
+        faaProcessResult = new FAAProcessResult__e(orderSummaryId__c = orderSummaryId, result__c = 'Manual Review');
         faaProcessResultList.add(faaProcessResult);
     }
 
-    // add manual review events 
+    // add approved events 
     for (Id orderSummaryId : orderSummariesToApproveMap.keySet()) {
-        recommendedOrderSummaryStatus = orderSummariesToCancelMap.get(orderSummaryId);
-        faaProcessResult = new FAAProcessResult__e(orderSummaryId__c = orderSummaryId, result__c = recommendedOrderSummaryStatus);
+        faaProcessResult = new FAAProcessResult__e(orderSummaryId__c = orderSummaryId, result__c = 'Approved');
         faaProcessResultList.add(faaProcessResult);
     }
 
