@@ -27,6 +27,7 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
     Map<Id, String> orderSummariesToCancelMap = new Map<Id, String>();   
     Map<Id, String> orderSummariesToManuallyReviewMap = new Map<Id, String>();
     Map<Id, String> orderSummariesToApproveMap = new Map<Id, String>();
+    Map<Id, String> orderSummariesToPendingMap = new Map<Id, String>();
 
     // TODO - pending fraud checks !!!! issue a pending event following the documentation
     
@@ -36,15 +37,20 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
             
         } else if (faaCheckLogAfterUpdate.status__c == FAATriggerHelper.STATUS_MANUAL_REVIEW) {
             orderSummariesToManuallyReviewMap.put(faaCheckLogAfterUpdate.orderSummaryId__c,  faaCheckLogAfterUpdate.status__c);
-        } else if (faaCheckLogAfterUpdate.status__c == FAATriggerHelper.STATUS_APPROVED) {
+            
+        }else if (faaCheckLogAfterUpdate.status__c == FAATriggerHelper.STATUS_PENDING) {
+            orderSummariesToPendingMap.put(faaCheckLogAfterUpdate.orderSummaryId__c, faaCheckLogAfterUpdate.status__c);
+        }
+        else if (faaCheckLogAfterUpdate.status__c == FAATriggerHelper.STATUS_APPROVED) {
             // if it is approved, verify it has not been rejected or requires manual review from any preceding log entries
             Boolean orderNotCancelledOrManualReview = (orderSummariesToCancelMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) == null || 
                                                       (orderSummariesToCancelMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) != FAATriggerHelper.STATUS_REJECTED && 
-                                                       orderSummariesToCancelMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) != FAATriggerHelper.STATUS_MANUAL_REVIEW));
+                                                      orderSummariesToManuallyReviewMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) != FAATriggerHelper.STATUS_MANUAL_REVIEW &&
+                                                       orderSummariesToCancorderSummariesToPendingMapelMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) != FAATriggerHelper.STATUS_PENDING));
             if (orderNotCancelledOrManualReview) {
                 orderSummariesToApproveMap.put(faaCheckLogAfterUpdate.orderSummaryId__c,  faaCheckLogAfterUpdate.status__c);
             }                
-        }
+        } 
     }
 
     List<FAAProcessResult__e> faaProcessResultList = new List<FAAProcessResult__e>();

@@ -58,11 +58,13 @@ Once the values are set, issue a Platform Event `FAAProcessStart__e` to start th
 #### Register a Fraud Provider
 
 *Naming Convention*
+
 As outline  in [Setup Permissions and Fields](####Setup-Permissions-and-Fields) there is a direct link between `FAAFraudChecks__c` and the FraudProvider.
 Lets say you have a Fraud check named `ThirdPartyCreditLimitCheck`, this must be the multipicklist value in `FAAFraudChecks__c`  and also the name of the `ApexClass`
 
 
 *Apex coding* 
+
 All Fraud implementations must be written as an Apex class.
 To register a class, it must extend the `FAACallable` Base Class.
 Once a Fraud check is performed, `processComplete` must be invoked, ensuring to get the Order Summary approved
