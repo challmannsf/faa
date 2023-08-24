@@ -53,7 +53,7 @@ In your order lifecycle, update the `OrderSummary.FAAFraudChecks__c`.
 You can define the place where to set this values, mostly this makes sense after `OrderSummaryCreated`. 
 Once the values are set, issue a Platform Event `FAAProcessStart__e` to start the proess
 
-<img src="docs/img/start_fraud_checks.png" width="500">
+<img src="docs/img/start_fraud_check.png" width="500">
 
 #### Register a Fraud Provider
 
