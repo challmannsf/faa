@@ -6,7 +6,7 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
         orderSummaryList.add(processStopEvent.orderSummaryId__c);
     }
 
-    List<FAACheckLog__c> faaCheckLogs = [SELECT status__c, orderSummaryId__c 
+    List<FAACheckLog__c> faaCheckLogs = [SELECT status__c, orderSummaryId__c, FraudProvider__c 
                                             FROM FAACheckLog__c
                                             WHERE orderSummaryId__c
                                             IN :orderSummaryList];
@@ -28,8 +28,6 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
     Map<Id, String> orderSummariesToManuallyReviewMap = new Map<Id, String>();
     Map<Id, String> orderSummariesToApproveMap = new Map<Id, String>();
     Map<Id, String> orderSummariesToPendingMap = new Map<Id, String>();
-
-    // TODO - pending fraud checks !!!! issue a pending event following the documentation
     
     for (FAACheckLog__c faaCheckLogAfterUpdate : faaCheckLogsAfterUpdate) {
         if (faaCheckLogAfterUpdate.status__c == FAATriggerHelper.STATUS_REJECTED) {
@@ -46,7 +44,7 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
             Boolean orderNotCancelledOrManualReview = (orderSummariesToCancelMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) == null || 
                                                       (orderSummariesToCancelMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) != FAATriggerHelper.STATUS_REJECTED && 
                                                       orderSummariesToManuallyReviewMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) != FAATriggerHelper.STATUS_MANUAL_REVIEW &&
-                                                       orderSummariesToCancorderSummariesToPendingMapelMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) != FAATriggerHelper.STATUS_PENDING));
+                                                      orderSummariesToPendingMap.get(faaCheckLogAfterUpdate.orderSummaryId__c) != FAATriggerHelper.STATUS_PENDING));
             if (orderNotCancelledOrManualReview) {
                 orderSummariesToApproveMap.put(faaCheckLogAfterUpdate.orderSummaryId__c,  faaCheckLogAfterUpdate.status__c);
             }                
@@ -68,11 +66,19 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
         faaProcessResultList.add(faaProcessResult);
     }
 
+    // add pending events 
+    for (Id orderSummaryId : orderSummariesToPendingMap.keySet()) {
+        faaProcessResult = new FAAProcessResult__e(orderSummaryId__c = orderSummaryId, result__c = 'Pending');
+        faaProcessResultList.add(faaProcessResult);
+    }
+
     // add approved events 
     for (Id orderSummaryId : orderSummariesToApproveMap.keySet()) {
         faaProcessResult = new FAAProcessResult__e(orderSummaryId__c = orderSummaryId, result__c = 'Approved');
         faaProcessResultList.add(faaProcessResult);
     }
+
+    
 
     List<Database.SaveResult> results = EventBus.publish(faaProcessResultList);
 }
