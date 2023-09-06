@@ -99,3 +99,7 @@ This Frameworks following the general rule:
 
 
 ### Retrigger Fraud Checks
+
+### TODO
+
+Add event for failure of a Fraud call ..
