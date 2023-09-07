@@ -96,10 +96,3 @@ This Frameworks following the general rule:
 4.  If a single Fraud Check on an OrderSummary is in Manual Review and none is rejected, `FAAProcessStop__e` with `FraudStatus = Manual Review` is issued.
 5.  Otherwise  `FAAProcessStop__e` with `FraudStatus = Approved` is issued
 
-
-
-### Retrigger Fraud Checks
-
-### TODO
-
-Add event for failure of a Fraud call ..
