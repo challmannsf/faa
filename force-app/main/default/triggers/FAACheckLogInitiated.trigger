@@ -2,7 +2,7 @@ trigger FAACheckLogInitiated on FAACheckLog__c (after insert) {
 
     List<FAACheckLog__c> fraudCheckLogs = new List<FAACheckLog__c>();
     Map<String, List<String>> fraudCheckAndOrderSummaryMap = new Map<String, List<String>>();
-        // Only run if initiated
+    // Only run if initiated
     for (FAACheckLog__c fraudCheckLog : Trigger.New) {
         if (fraudCheckLog.status__c  != 'Initiated') {
             continue;

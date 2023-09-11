@@ -13,9 +13,12 @@ trigger FAAProcessStop on FAAProcessStop__e (after insert) {
 
     List<FAACheckLog__c> faaCheckLogsToUpdate = new List<FAACheckLog__c>();
     for (FAACheckLog__c faaCheckLog : faaCheckLogs) {
-        faaCheckLog.status__c = fraudProviderStatusMap.get(faaCheckLog.fraudProvider__c);
-        faaCheckLog.PendingSince__c = (faaCheckLog.status__c == FAATriggerHelper.STATUS_PENDING) ? datetime.now() : null;
-        faaCheckLogsToUpdate.add(faaCheckLog);
+        if (fraudProviderStatusMap.get(faaCheckLog.fraudProvider__c) != null) {
+            faaCheckLog.status__c = fraudProviderStatusMap.get(faaCheckLog.fraudProvider__c);
+            faaCheckLog.PendingSince__c = (faaCheckLog.status__c == FAATriggerHelper.STATUS_PENDING) ? datetime.now() : null;
+            faaCheckLogsToUpdate.add(faaCheckLog);
+        } 
+    
     }
     update faaCheckLogsToUpdate;
 
