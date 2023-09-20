@@ -4,15 +4,13 @@ trigger FAACheckLogInitiated on FAACheckLog__c (after insert) {
     Map<String, List<String>> fraudCheckAndOrderSummaryMap = new Map<String, List<String>>();
     // Only run if initiated
     for (FAACheckLog__c fraudCheckLog : Trigger.New) {
-        if (fraudCheckLog.status__c  != 'Initiated') {
+        if (fraudCheckLog.status__c  != FAATriggerHelper.STATUS_INITIATED) {
             continue;
         }
-        List<String> orderSummariesToCheck = new List<String>();
-        if (fraudCheckAndOrderSummaryMap.get(fraudCheckLog.FraudProvider__c) != null) {
-            orderSummariesToCheck = fraudCheckAndOrderSummaryMap.get(fraudCheckLog.FraudProvider__c);
+        if (!fraudCheckAndOrderSummaryMap.containsKey(fraudCheckLog.FraudProvider__c)) {
+            fraudCheckAndOrderSummaryMap.put(fraudCheckLog.FraudProvider__c, new List<String>());
         }
-        orderSummariesToCheck.add(fraudCheckLog.OrderSummaryId__c);
-        fraudCheckAndOrderSummaryMap.put(fraudCheckLog.fraudProvider__c, orderSummariesToCheck);
+        fraudCheckAndOrderSummaryMap.get(fraudCheckLog.fraudProvider__c).add(fraudCheckLog.OrderSummaryId__c);
     }
 
 

@@ -3,13 +3,12 @@
  * All Orders Fraud checks are executed which are residing in fraudChecks__c
  */
 
-trigger FAAProcessStart on FAAProcessStart__e (after insert) {
-    System.debug('FAAProcessStart called');
+ trigger FAAProcessStart on FAAProcessStart__e (after insert) {
+    //insert the check log for OS
     List <Id> orderSummaryIds = new List<Id>();
     
-    for (FAAProcessStart__e processStartEvent : Trigger.New) {
+    for (FAAProcessStart__e processStartEvent : Trigger.new) {
         orderSummaryIds.add(processStartEvent.OrderSummaryId__c);
-        System.debug('FAAProcessStart called for Order Summary ' + processStartEvent.OrderSummaryId__c);
     }
     List<OrderSummary> orderSummaries = FAATriggerHelper.getOrderSummariesToValidate(orderSummaryIds);
     List<FAACheckLog__c> fraudCheckLogs = new List<FAACheckLog__c>();
@@ -25,7 +24,7 @@ trigger FAAProcessStart on FAAProcessStart__e (after insert) {
                 fraudCheckLogs.add(fraudCheckLog);
             }
         }
-       
+    
     }
 
     insert fraudCheckLogs;

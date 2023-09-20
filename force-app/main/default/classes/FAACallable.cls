@@ -7,17 +7,18 @@ public with sharing virtual class FAACallable implements Callable {
     }
 
 
-    public virtual void processComplete(List<String> orderSummaryIds, String status, String fraudProvider) {
+    public virtual void processComplete(List<String> orderSummaryIds, String status, String fraudProvider, String reason) {
         // Issue event FAAProcessComplete and update the OS with the status
-        List<FAAProcessStop__e> FAAProcessStopEventList = new List<FAAProcessStop__e>();
+        List<FAAProcessStop__e> faaProcessStopEventList = new List<FAAProcessStop__e>();
         for (String orderSummaryId : orderSummaryIds) {
-            FAAProcessStop__e FAAProcessStopEvent = new FAAProcessStop__e(
-                orderSummaryId__c = orderSummaryId,
+            FAAProcessStop__e faaProcessStopEvent = new FAAProcessStop__e(
+                orderSummaryId__c = orderSummaryId, 
                 fraudStatus__c = status,
-                fraudProvider__c = fraudProvider);
-            FAAProcessStopEventList.add(FAAProcessStopEvent);
+                fraudProvider__c = fraudProvider,
+            	Reason__c = reason);
+            faaProcessStopEventList.add(faaProcessStopEvent);
         }
-        List<Database.SaveResult> results = EventBus.publish(FAAProcessStopEventList);
+        EventBus.publish(faaProcessStopEventList);
     }
 
 
